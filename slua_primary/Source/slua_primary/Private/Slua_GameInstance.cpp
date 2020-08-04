@@ -144,3 +144,22 @@ void USlua_GameInstance::downloadassetfromcloudorlocal(FString serverpath, FOnAs
 		});
 	tlff->StartLoad(localfilepath, cloudfilepath, md5);
 }
+void USlua_GameInstance::dosthdelay(float delay, FOnTimeupdelegate ontimeupdelegate, const FString& para,bool bgamethread)
+{
+	Async(EAsyncExecution::ThreadPool, [=]() {
+		FPlatformProcess::Sleep(delay);
+		if (bgamethread)
+		{
+			AsyncTask(ENamedThreads::GameThread,
+				[=]()
+				{
+					ontimeupdelegate.ExecuteIfBound(para);
+				}
+			);
+		}
+		else
+		{
+			ontimeupdelegate.ExecuteIfBound(para);
+		}
+		}, nullptr);
+}

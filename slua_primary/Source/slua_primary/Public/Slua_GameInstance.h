@@ -41,5 +41,7 @@ public:
 		void httpgetrequest(FString url, FOnRequestCompleted OnRequestCompletedvent, FOnAssetdownloadingevent OnAssetdownloadingevent, FOnAssetdownloadFailed OnAssetdownloadFailed);
 	UFUNCTION()
 		void downloadassetfromcloudorlocal(FString serverpath, FOnAssetfoundvent OnAssetdfoundvent, FOnAssetdownloadingevent OnAssetdownloadingevent, FOnAssetdownloadFailed OnAssetdownloadFailed, const FString& md5 = "");
-
+	DECLARE_DYNAMIC_DELEGATE_OneParam(FOnTimeupdelegate,const FString&,str);
+	UFUNCTION()
+		void dosthdelay(float delay, FOnTimeupdelegate ontimeupdelegate,const FString & para,bool bgamethread=false);
 };
