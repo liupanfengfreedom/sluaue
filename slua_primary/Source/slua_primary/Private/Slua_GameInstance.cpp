@@ -144,22 +144,19 @@ void USlua_GameInstance::downloadassetfromcloudorlocal(FString serverpath, FOnAs
 		});
 	tlff->StartLoad(localfilepath, cloudfilepath, md5);
 }
-void USlua_GameInstance::dosthdelay(float delay, FOnTimeupdelegate ontimeupdelegate, const FString& para,bool bgamethread)
+void USlua_GameInstance::dosthdelay(float delay, FOnTimeupdelegate ontimeupdelegate, const FString& para)
 {
 	Async(EAsyncExecution::ThreadPool, [=]() {
 		FPlatformProcess::Sleep(delay);
-		if (bgamethread)
-		{
-			AsyncTask(ENamedThreads::GameThread,
-				[=]()
-				{
-					ontimeupdelegate.ExecuteIfBound(para);
-				}
-			);
-		}
-		else
-		{
-			ontimeupdelegate.ExecuteIfBound(para);
-		}
+				AsyncTask(ENamedThreads::GameThread,
+					[=]()
+					{
+						ontimeupdelegate.ExecuteIfBound(para);
+					}
+				);
 		}, nullptr);
+}
+void USlua_GameInstance::testfunc()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("call from lua"));
 }
