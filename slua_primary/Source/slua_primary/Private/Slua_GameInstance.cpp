@@ -11,6 +11,7 @@
 #include "LoadFileFromLocalOrCloud.h"
 #include "HttpServiceRaw.h"
 #include "MyBlueprintFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 // read file content
 static uint8* ReadFile(IPlatformFile& PlatformFile, FString path, uint32& len) {
 	IFileHandle* FileHandle = PlatformFile.OpenRead(*path);
@@ -159,4 +160,8 @@ void USlua_GameInstance::dosthdelay(float delay, FOnTimeupdelegate ontimeupdeleg
 void USlua_GameInstance::logtoscreen(const FString& message)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, message);
+}
+void USlua_GameInstance::openlevel(const FString& message)
+{
+	UGameplayStatics::OpenLevel(GetWorld(), *message);
 }

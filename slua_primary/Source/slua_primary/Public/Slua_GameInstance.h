@@ -46,4 +46,6 @@ public:
 		void dosthdelay(float delay, FOnTimeupdelegate ontimeupdelegate,const FString & para);
 	UFUNCTION(BlueprintCallable)
 		void logtoscreen(const FString& message);
+	UFUNCTION(BlueprintCallable)
+		void openlevel(const FString& message);
 };
