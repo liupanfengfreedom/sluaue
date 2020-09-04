@@ -26,12 +26,12 @@ struct SLUA_UNREAL_API FLuaBPVar {
 	GENERATED_USTRUCT_BODY()
 public:
 	FLuaBPVar(const NS_SLUA::LuaVar& v) :value(v) {}
-	FLuaBPVar(NS_SLUA::LuaVar&& v) :value(MoveTemp(v)) {}
+	FLuaBPVar(NS_SLUA::LuaVar&& v) :value(std::move(v)) {}
 	FLuaBPVar() {}
 
 	NS_SLUA::LuaVar value;
 
-	static int checkValue(NS_SLUA::lua_State* L, UStructProperty* p, uint8* params, int i);
+	static int checkValue(NS_SLUA::lua_State* L, FStructProperty* p, uint8* params, int i);
 };
 
 UCLASS()

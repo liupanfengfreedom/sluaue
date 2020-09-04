@@ -49,7 +49,7 @@ namespace NS_SLUA {
             clone(other);
         }
         LuaVar(LuaVar&& other):LuaVar() {
-            move(MoveTemp(other));
+            move(std::move(other));
         }
 
         void operator=(const LuaVar& other) {
@@ -58,7 +58,7 @@ namespace NS_SLUA {
         }
         void operator=(LuaVar&& other) {
             free();
-            move(MoveTemp(other));
+            move(std::move(other));
         }
 
         virtual ~LuaVar();
@@ -120,7 +120,7 @@ namespace NS_SLUA {
             push(L);
             R r = ArgOperatorOpt::readArg<typename remove_cr<R>::type>(L,-1);
             lua_pop(L,1);
-            return MoveTemp(r);
+            return std::move(r);
         }
 
 
@@ -238,8 +238,8 @@ namespace NS_SLUA {
             return ret;
         }
 
-        bool toProperty(UProperty* p,uint8* ptr);
-        bool callByUFunction(UFunction* ufunc,uint8* parms,struct FOutParmRec *outParams=nullptr,RESULT_DECL=nullptr,LuaVar* pSelf=nullptr);
+        bool toProperty(FProperty* p,uint8* ptr);
+        bool callByUFunction(UFunction* ufunc,uint8* parms,LuaVar* pSelf = nullptr,FOutParmRec* OutParms = nullptr);
 
 		// get associate state
 		lua_State* getState() const;
@@ -339,7 +339,7 @@ namespace NS_SLUA {
         }
 
         int docall(int argn) const;
-        int pushArgByParms(UProperty* prop,uint8* parms);
+        int pushArgByParms(FProperty* prop,uint8* parms);
 
         void clone(const LuaVar& other);
         void move(LuaVar&& other);

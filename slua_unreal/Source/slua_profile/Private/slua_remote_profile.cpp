@@ -14,7 +14,7 @@
 #include "slua_remote_profile.h"
 #include "slua_profile.h"
 #include "Common/TcpListener.h"
-#include "Templates/SharedPointer.h"
+#include "SharedPointer.h"
 #include "SocketSubsystem.h"
 #include "SluaUtil.h"
 #include "LuaProfiler.h"
@@ -97,6 +97,8 @@ namespace slua
 				{
 					OnProfileMessageDelegate.ExecuteIfBound(Message);
 				}
+                
+				break;
 			}
 
 			FPlatformProcess::Sleep(ActiveConnections > 0 ? 0.01f : 1.f);
@@ -357,15 +359,11 @@ namespace slua
 		FArrayReader& MessageReader = Message.ToSharedRef().Get();
 
 		MessageReader << Event;
-		switch (Event)
-		{
-		case NS_SLUA::ProfilerHookEvent::PHE_MEMORY_TICK:
-			MessageReader << memoryInfoList;
-			return true;
-		case NS_SLUA::ProfilerHookEvent::PHE_MEMORY_INCREACE:
-			MessageReader << memoryIncrease;
-			return true;
-		}
+        if(Event == NS_SLUA::ProfilerHookEvent::PHE_MEMORY_TICK)
+        {
+            MessageReader << memoryInfoList;
+            return true;
+        }
         
 		MessageReader << Time;
 		MessageReader << Linedefined;

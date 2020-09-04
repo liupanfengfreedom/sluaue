@@ -16,7 +16,6 @@
 #include "CoreMinimal.h"
 #include "lua/lua.hpp"
 #include "SluaUtil.h"
-#include "LuaObject.h"
 #include "LuaDelegate.generated.h"
 
 namespace NS_SLUA {

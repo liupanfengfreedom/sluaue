@@ -25,10 +25,7 @@ namespace NS_SLUA {
 		PHE_RETURN = 1,
 		PHE_LINE = 2,
 		PHE_TAILRET = 4,
-        PHE_MEMORY_GC = 5,
-		PHE_MEMORY_INCREACE = 6,
-		PHE_ENTER_COROUTINE = 7,
-		PHE_EXIT_COROUTINE = 8,
+        PHE_MEMORY_GC = 5
 	};
 
 	class SLUA_UNREAL_API LuaProfiler
@@ -37,11 +34,8 @@ namespace NS_SLUA {
 		LuaProfiler(const char* funcName);
 		~LuaProfiler();
 		
-		static void init(class LuaState* LS);
-		static void tick(class LuaState* LS);
-		static void clean(class LuaState* LS);
-
-		static const char* ChunkName;
+		static void init(lua_State* L);
+		static void tick(lua_State* L);
 	};
 
 #ifdef ENABLE_PROFILER

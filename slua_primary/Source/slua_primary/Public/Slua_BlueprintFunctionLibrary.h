@@ -12,7 +12,7 @@
 UCLASS()
 class SLUA_PRIMARY_API USlua_BlueprintFunctionLibrary : public UBlueprintFunctionLibrary
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 public:
     UFUNCTION(BlueprintCallable, Category = "Lua library")
         static bool isfileexist_undercontentfolder(FString filename, FString md5 = "");
@@ -21,5 +21,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Lua library")
         static void ImagesetTexturefromrawimageundercontent(class UImage* imagep, FString path);
     UFUNCTION(BlueprintCallable, Category = "Lua library")
-        static float FVectordistance(FVector&v1,FVector&v2);
+        static float FVectordistance(FVector& v1, FVector& v2);
+    //template<typename T>
+    //static void Arraytojsonstring<T>(TArray<T> arrayt, FString& strout)
+    //{
+
+    //};
 };
