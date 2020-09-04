@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and limitations under the License.
 
 #include "LuaReference.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 namespace NS_SLUA {
 	namespace LuaReference {
 
 		void addRefByStruct(FReferenceCollector& collector, UStruct* us, void* base, bool container) {
-			for (TFieldIterator<const FProperty> it(us); it; ++it)
+			for (TFieldIterator<const UProperty> it(us); it; ++it)
 				addRefByProperty(collector, *it, base, container);
 		}
 
@@ -30,7 +31,7 @@ namespace NS_SLUA {
 		}
 
 
-		bool addRef(const FSetProperty* p, void* base, FReferenceCollector& collector, bool container = true)
+		bool addRef(const USetProperty* p, void* base, FReferenceCollector& collector, bool container = true)
 		{
 			bool ret = false;
 			for (int32 n = 0; n < p->ArrayDim; ++n)
@@ -56,7 +57,7 @@ namespace NS_SLUA {
 			return ret;
 		}
 
-		bool addRef(const FMapProperty* p, void* base, FReferenceCollector& collector, bool container = true)
+		bool addRef(const UMapProperty* p, void* base, FReferenceCollector& collector, bool container = true)
 		{
 			bool ret = false;
 			for (int n = 0; n < p->ArrayDim; ++n)
@@ -86,7 +87,7 @@ namespace NS_SLUA {
 			return ret;
 		}
 
-		bool addRef(const FObjectProperty* p, void* base, FReferenceCollector &collector, bool container = true)
+		bool addRef(const UObjectProperty* p, void* base, FReferenceCollector &collector, bool container = true)
 		{
 			bool ret = false;
 			for (int n = 0; n < p->ArrayDim; ++n)
@@ -108,7 +109,7 @@ namespace NS_SLUA {
 			return ret;
 		}
 
-		bool addRef(const FArrayProperty* p, void* base, FReferenceCollector& collector, bool container = true)
+		bool addRef(const UArrayProperty* p, void* base, FReferenceCollector& collector, bool container = true)
 		{
 			bool ret = false;
 			for (int n = 0; n < p->ArrayDim; ++n)
@@ -122,7 +123,7 @@ namespace NS_SLUA {
 			return ret;
 		}
 
-		bool addRef(const FMulticastDelegateProperty* p, void* base, FReferenceCollector& collector, bool container = true)
+		bool addRef(const UMulticastDelegateProperty* p, void* base, FReferenceCollector& collector, bool container = true)
 		{
 			for (int n = 0; n < p->ArrayDim; ++n)
 			{
@@ -136,7 +137,7 @@ namespace NS_SLUA {
 			return false;
 		}
 
-		bool addRef(const FStructProperty* p, void* base, FReferenceCollector& collector, bool container = true)
+		bool addRef(const UStructProperty* p, void* base, FReferenceCollector& collector, bool container = true)
 		{
 			for (int n = 0; n < p->ArrayDim; ++n) {
 				addRefByStruct(collector, p->Struct, container?p->ContainerPtrToValuePtr<void>(base, n):base);
@@ -144,36 +145,39 @@ namespace NS_SLUA {
 			return false;
 		}
 
-		//bool addRef(const UDelegateProperty* p, void* base, FReferenceCollector& collector, bool container = true)
-		//{
-		//	for (int n = 0; n < p->ArrayDim; ++n) {
-		//		FScriptDelegate* value = p->GetPropertyValuePtr(container?p->ContainerPtrToValuePtr<void>(base, n):base);
-		//		addRefByDelegate(collector, *value);
-		//	}
-		//	return false;
-		//}
+		bool addRef(const UDelegateProperty* p, void* base, FReferenceCollector& collector, bool container = true)
+		{
+			for (int n = 0; n < p->ArrayDim; ++n) {
+				FScriptDelegate* value = p->GetPropertyValuePtr(container?p->ContainerPtrToValuePtr<void>(base, n):base);
+				addRefByDelegate(collector, *value);
+			}
+			return false;
+		}
 
-		bool addRefByProperty(FReferenceCollector& collector, const FProperty* prop, void* base, bool container) {
+		bool addRefByProperty(FReferenceCollector& collector, const UProperty* prop, void* base, bool container) {
 			
-			if (auto p = CastField<FObjectProperty>(prop)) {
+			if (auto p = Cast<UObjectProperty>(prop)) {
 				return addRef(p, base, collector, container);
 			}
-			if (auto p = CastField<FArrayProperty>(prop))
+			if (auto p = Cast<UArrayProperty>(prop))
 			{
 				return addRef(p, base, collector, container);
 			}
-			if (auto p = CastField<FStructProperty>(prop)) {
+			if (auto p = Cast<UStructProperty>(prop)) {
 				return addRef(p, base, collector, container);
 			}
-			if (auto p = CastField<FMapProperty>(prop))
+			if (auto p = Cast<UDelegateProperty>(prop)) {
+				return addRef(p, base, collector, container);
+			}
+			if (auto p = Cast<UMapProperty>(prop))
 			{
 				return addRef(p, base, collector, container);
 			}
-			if (auto p = CastField<FSetProperty>(prop))
+			if (auto p = Cast<USetProperty>(prop))
 			{
 				return addRef(p, base, collector, container);
 			}
-			if (auto p = CastField<FMulticastDelegateProperty>(prop))
+			if (auto p = Cast<UMulticastDelegateProperty>(prop))
 			{
 				return addRef(p, base, collector, container);
 			}

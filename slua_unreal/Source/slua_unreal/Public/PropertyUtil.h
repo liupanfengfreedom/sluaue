@@ -91,9 +91,10 @@ namespace NS_SLUA {
         EPropertyClass type;
         UClass* cls;
 
-        // create FProperty by PropertyProto
-        // returned FProperty should be collect by yourself
-        static FProperty* createProperty(const PropertyProto& p);
+        // create UProperty by PropertyProto
+        // returned UProperty should be collect by yourself
+        static UProperty* createProperty(const PropertyProto& p);
     }; 
 
+    
 }

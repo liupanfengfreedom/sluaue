@@ -13,10 +13,10 @@
 
 #pragma once
 #include "LuaObject.h"
-#include "Margin.h"
-#include "SlateColor.h"
-#include "SlateBrush.h"
-#include "SlateFontInfo.h"
+#include "Layout/Margin.h"
+#include "Styling/SlateColor.h"
+#include "Styling/SlateBrush.h"
+#include "Fonts/SlateFontInfo.h"
 #include "Log.h"
 
 #define LUA_WRAPPER_DEBUG
@@ -26,8 +26,8 @@ namespace NS_SLUA {
 	struct LuaWrapper {
 
 		static void init(lua_State* L);
-		static int pushValue(lua_State* L, FStructProperty* p, UScriptStruct* uss, uint8* parms);
-		static int checkValue(lua_State* L, FStructProperty* p, UScriptStruct* uss, uint8* parms, int i);
+		static int pushValue(lua_State* L, UStructProperty* p, UScriptStruct* uss, uint8* parms);
+		static int checkValue(lua_State* L, UStructProperty* p, UScriptStruct* uss, uint8* parms, int i);
 
 	};
 

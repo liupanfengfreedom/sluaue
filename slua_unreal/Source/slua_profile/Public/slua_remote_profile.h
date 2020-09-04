@@ -17,11 +17,11 @@
 #include "HAL/Runnable.h"
 #include "Containers/Queue.h"
 #include "Interfaces/IPv4/IPv4Endpoint.h"
-#include "slua_unreal/Private/LuaMemoryProfile.h"
-#include "SharedPointer.h"
-#include "ArrayWriter.h"
-#include "ArrayReader.h"
-#include "DelegateCombinations.h"
+#include "LuaMemoryProfile.h"
+#include "Templates/SharedPointer.h"
+#include "Serialization/ArrayWriter.h"
+#include "Serialization/ArrayReader.h"
+#include "Delegates/DelegateCombinations.h"
 
 class FSocket;
 class FTcpListener;
@@ -156,5 +156,7 @@ namespace slua {
         
         //Memory infomation
         TArray<NS_SLUA::LuaMemInfo> memoryInfoList;
+		TArray<NS_SLUA::LuaMemInfo> memoryIncrease;
+		TArray<NS_SLUA::LuaMemInfo> memoryDecrease;
 	};
 }
