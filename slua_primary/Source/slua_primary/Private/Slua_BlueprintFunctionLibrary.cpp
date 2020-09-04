@@ -39,3 +39,7 @@ float USlua_BlueprintFunctionLibrary::FVectordistance(FVector& v1, FVector& v2)
 {
 	return FVector::Dist(v1,v2);
 }
+//void USlua_BlueprintFunctionLibrary::Arraytojsonstring<T>(FVector& v1, FVector& v2)
+//{
+//	return FVector::Dist(v1, v2);
+//}

@@ -20,23 +20,23 @@
 #include "Widgets/Views/STreeView.h"
 #include "Widgets/Views/SListView.h"
 #include "Widgets/Input/SCheckBox.h"
+#include "Widgets/Input/SButton.h"
 #include "Widgets/Notifications/SProgressBar.h"
+#include "Widgets/Views/STreeView.h"
 #include "slua_remote_profile.h"
-#include "LuaMemoryProfile.h"
+#include "slua_unreal/Private/LuaMemoryProfile.h"
+#include "Input/Reply.h"
 
 #define IsMemoryProfiler (m_stdLineVisibility.Get() != EVisibility::Visible)
 
 struct FunctionProfileInfo;
 struct FileMemInfo;
 struct ProflierMemNode;
-struct MemoryFrame;
 
 typedef TArray<TSharedPtr<FunctionProfileInfo>> SluaProfiler;
-typedef TSharedPtr<MemoryFrame, ESPMode::ThreadSafe> MemoryFramePtr;
-typedef TMap<FString, TMap<int, TSharedPtr<FileMemInfo>>> MemFileInfoMap;
-typedef TArray<TSharedPtr<ProflierMemNode>> MemNodeInfoList;
+typedef TArray<FileMemInfo> MemFileInfoList;
+typedef TArray<ProflierMemNode> MemNodeInfoList;
 typedef TArray<TSharedPtr<FileMemInfo>> ShownMemInfoList;
-typedef TMap<FString, TSharedPtr<FileMemInfo>> ParentFileMap;
 
 class SProfilerWidget;
 class SProfilerTabWidget;
@@ -53,8 +53,7 @@ struct FileMemInfo {
 };
 
 struct ProflierMemNode {
-    MemFileInfoMap infoList;
-    ParentFileMap parentFileMap;
+    MemFileInfoList infoList;
     float totalSize;
 };
 
@@ -64,7 +63,7 @@ public:
     SProfilerInspector();
     ~SProfilerInspector();
     
-    void Refresh(TArray<SluaProfiler>& curProfilersArray, TMap<int64, NS_SLUA::LuaMemInfo>& memoryInfoList, MemoryFramePtr memoryFrame);
+    void Refresh(TArray<SluaProfiler>& curProfilersArray, TArray<NS_SLUA::LuaMemInfo> memoryInfoList);
     TSharedRef<class SDockTab> GetSDockTab();
     TSharedRef<ITableRow> OnGenerateMemRowForList(TSharedPtr<FileMemInfo> Item, const TSharedRef<STableViewBase>& OwnerTable);
     TSharedRef<ITableRow> OnGenerateRowForList(TSharedPtr<FunctionProfileInfo> Item, const TSharedRef<STableViewBase>& OwnerTable);
@@ -80,16 +79,13 @@ public:
         needProfilerCleared = needClear;
     }
     
-    TSharedPtr<NS_SLUA::FProfileServer> ProfileServer;
+    TSharedPtr<slua::FProfileServer> ProfileServer;
     
 private:
     const static int sampleNum = cMaxSampleNum;
     const static int fixRowWidth = 300;
     const static int refreshInterval = 50;
     const float perMilliSec = 1000.0f;
-    const static int maxMemoryFile = 30;
-
-	typedef TMap<FString, int> MemInfoIndexMap;
     
     TSharedPtr<STreeView<TSharedPtr<FunctionProfileInfo>>> treeview;
     TSharedPtr<SListView<TSharedPtr<FileMemInfo>>> listview;
@@ -114,7 +110,6 @@ private:
     float maxLuaMemory;
     float avgLuaMemory;
     float luaTotalMemSize;
-    float lastLuaTotalMemSize;
     float maxProfileSamplesCostTime;
     float avgProfileSamplesCostTime;
     bool hasCleared;
@@ -129,12 +124,11 @@ private:
     SluaProfiler shownProfiler;
     SluaProfiler tmpRootProfiler;
     SluaProfiler tmpProfiler;
-    TSharedPtr<ProflierMemNode> lastLuaMemNode;
     /* holding all of the memory node which are showed on Profiler chart */
     MemNodeInfoList luaMemNodeChartList;
     /* refresh with the chart line, when mouse clicks down, it'll get point from this array */
     MemNodeInfoList tempLuaMemNodeChartList;
-    MemFileInfoMap shownFileInfo;
+    ShownMemInfoList shownFileInfo;
     /* store the file name as the parent item in memory treeview */
     ShownMemInfoList shownParentFileName;
     
@@ -154,15 +148,16 @@ private:
     FString GenBrevFuncName(FString &functionName);
     void CopyFunctionNode(TSharedPtr<FunctionProfileInfo>& oldFuncNode, TSharedPtr<FunctionProfileInfo>& newFuncNode);
     void InitProfilerBar(int barIdx, TSharedPtr<SHorizontalBox>& horBox);
-    void RestartMemoryStatistis();
     void OnClearBtnClicked();
     void SortProfiler(SluaProfiler &shownRootProfiler);
     void SortShownInfo();
     void CalcPointMemdiff(int beginIndex, int endIndex);
-    void CollectMemoryNode(TMap<int64, NS_SLUA::LuaMemInfo>& memoryInfoMap, MemoryFramePtr memoryFrame);
-    void CombineSameFileInfo(ProflierMemNode& proflierMemNode);
-    int ContainsFile(FString& fileName, MemInfoIndexMap &list);
+    void CollectMemoryNode(TArray<NS_SLUA::LuaMemInfo> memoryInfoList);
+    void CombineSameFileInfo(MemFileInfoList& infoList);
+    int ContainsFile(FString& fileName, ShownMemInfoList &list);
     FString ChooseMemoryUnit(float memorySize);
+    TArray<FString> SplitFlieName(FString filePath);
+    
 };
 
 class SLUA_PROFILE_API SProfilerWidget : public SCompoundWidget

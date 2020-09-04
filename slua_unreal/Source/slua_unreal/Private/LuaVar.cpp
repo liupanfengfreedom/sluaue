@@ -580,14 +580,14 @@ namespace NS_SLUA {
         return lua_gettop(L)-top+1;
     }
 
-    int LuaVar::pushArgByParms(UProperty* prop,uint8* parms) {
+    int LuaVar::pushArgByParms(FProperty* prop,uint8* parms) {
         auto L = getState();
-        if (LuaObject::push(L,prop,parms,nullptr))
+        if (LuaObject::push(L,prop,parms,false))
             return prop->ElementSize;
         return 0;
     }
 
-    bool LuaVar::callByUFunction(UFunction* func,uint8* parms,FOutParmRec *outParams,RESULT_DECL,LuaVar* pSelf) {
+    bool LuaVar::callByUFunction(UFunction* func,uint8* parms, LuaVar* pSelf, FOutParmRec* OutParms) {
         
         if(!func) return false;
 
@@ -616,14 +616,10 @@ namespace NS_SLUA {
 			n++;
 		}
         // push arguments to lua state
-        for(TFieldIterator<UProperty> it(func);it && (it->PropertyFlags&CPF_Parm);++it) {
-            UProperty* prop = *it;
+        for(TFieldIterator<FProperty> it(func);it && (it->PropertyFlags&CPF_Parm);++it) {
+            FProperty* prop = *it;
             uint64 propflag = prop->GetPropertyFlags();
-            if (func->HasAnyFunctionFlags(FUNC_Native)) {
-                if ((propflag & CPF_ReturnParm))
-                    continue;
-            }
-            else if (IsRealOutParam(propflag))
+            if((propflag&CPF_ReturnParm) || IsRealOutParam(propflag))
                 continue;
 
             pushArgByParms(prop,parms+prop->GetOffset_ForInternal());
@@ -640,29 +636,24 @@ namespace NS_SLUA {
             auto checkder = prop?LuaObject::getChecker(prop):nullptr;
             if (checkder) {
                 (*checkder)(L, prop, parms+prop->GetOffset_ForInternal(), lua_absindex(L, -remain));
-                if (RESULT_PARAM) {
-                    prop->CopyCompleteValue(RESULT_PARAM, prop->ContainerPtrToValuePtr<uint8>(parms));
-                }
             }
 			remain--;
         }
 
 		// fill lua return value to blueprint stack if argument is out param
-		for (TFieldIterator<UProperty> it(func); remain >0 && it && (it->PropertyFlags&CPF_Parm); ++it) {
-			UProperty* prop = *it;
+		for (TFieldIterator<FProperty> it(func); remain >0 && it && (it->PropertyFlags&CPF_Parm); ++it) {
+			FProperty* prop = *it;
 			uint64 propflag = prop->GetPropertyFlags();
-            if (IsRealOutParam(propflag)) {
-                auto checker = LuaObject::getChecker(prop);
-                FOutParmRec* out = outParams;
-                while (out && out->Property != prop) {
-                    out = out->NextOutParm;
-                }
-                uint8* outParam = out ? out->PropAddr : parms + prop->GetOffset_ForInternal();
-                if (checker) {
-                    (*checker)(L, prop, outParam, lua_absindex(L, -remain));
-                }
-                remain--;
-            }
+			if (IsRealOutParam(propflag))
+			{
+				auto checkder = prop ? LuaObject::getChecker(prop) : nullptr;
+				uint8* outPamams = OutParms ? OutParms->PropAddr : parms + prop->GetOffset_ForInternal();
+				if (checkder) {
+					(*checkder)(L, prop, outPamams, lua_absindex(L, -remain));
+				}
+				if(OutParms) OutParms = OutParms->NextOutParm;
+				remain--;
+			}
 		}
         // pop returned value
         lua_pop(L, retCount);
@@ -722,7 +713,7 @@ namespace NS_SLUA {
         other.vars = nullptr;
     }
 
-    bool LuaVar::toProperty(UProperty* p,uint8* ptr) {
+    bool LuaVar::toProperty(FProperty* p,uint8* ptr) {
 
         auto func = LuaObject::getChecker(p);
         if(func) {

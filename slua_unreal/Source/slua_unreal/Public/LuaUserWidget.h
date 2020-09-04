@@ -42,9 +42,8 @@ public:
 	FLuaBPVar CallLuaMember(FString FunctionName, const TArray<FLuaBPVar>& Args) {
 		return callMember(FunctionName, Args);
 	}
-	virtual bool Initialize() override;
+
 	virtual void ProcessEvent(UFunction* func, void* params) override;
-	virtual void BeginDestroy() override;
 	void superTick(NS_SLUA::lua_State* L) override;
 	void superTick() override;
 	void tick(float dt) override;
@@ -53,8 +52,6 @@ public:
 		return luaSelfTable;
 	}
 private:
-	void InitLuaTable();
-
 	FGeometry currentGeometry;
 };
 
