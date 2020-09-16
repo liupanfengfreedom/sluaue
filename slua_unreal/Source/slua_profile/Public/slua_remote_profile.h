@@ -18,10 +18,10 @@
 #include "Containers/Queue.h"
 #include "Interfaces/IPv4/IPv4Endpoint.h"
 #include "slua_unreal/Private/LuaMemoryProfile.h"
-#include "SharedPointer.h"
-#include "ArrayWriter.h"
-#include "ArrayReader.h"
-#include "DelegateCombinations.h"
+#include "Core/Public/Templates/SharedPointer.h"
+#include "Core/Public/Serialization/ArrayWriter.h"
+#include "Core/Public/Serialization/ArrayReader.h"
+#include "Core/Public/Delegates/DelegateCombinations.h"
 
 class FSocket;
 class FTcpListener;

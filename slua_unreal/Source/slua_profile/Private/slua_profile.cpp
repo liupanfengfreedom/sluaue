@@ -13,7 +13,7 @@
 
 #include "slua_profile.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
-#include "FileManager.h"
+#include "Core/Public/HAL/FileManager.h"
 #include "Engine/GameEngine.h"
 #include "Containers/Ticker.h"
 #include "LuaState.h"

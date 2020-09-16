@@ -24,7 +24,8 @@ public class slua_unreal : ModuleRules
         bEnforceIWYU = false;
         bEnableUndefinedIdentifierWarnings = false;
 
-        var externalSource = Path.Combine(ModuleDirectory, "../../External");
+        //var externalSource = Path.Combine(ModuleDirectory, "../../External");
+        var externalSource = Path.Combine(ModuleDirectory, "Public");
         var externalLib = Path.Combine(ModuleDirectory, "../../Library");
 
         PublicIncludePaths.AddRange(
