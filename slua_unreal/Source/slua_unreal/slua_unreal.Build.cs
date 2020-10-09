@@ -36,6 +36,7 @@ public class slua_unreal : ModuleRules
             );
         if (Target.Platform == UnrealTargetPlatform.IOS)
         {
+            externalLib = Path.Combine(ModuleDirectory, "../Library");
             PublicAdditionalLibraries.Add(Path.Combine(externalLib, "iOS/liblua.a"));
         }
         else if (Target.Platform == UnrealTargetPlatform.Android)
