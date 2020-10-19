@@ -1,0 +1,17 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.slua_primary.cpp.obj": [
+			"Slua_BlueprintFunctionLibrary.cpp.obj",
+			"Slua_GameInstance.cpp.obj",
+			"Slua_LevelScriptActor.cpp.obj",
+			"slua_primary.cpp.obj"
+		],
+		"Module.slua_primary.gen.cpp.obj": [
+			"Slua_BlueprintFunctionLibrary.gen.cpp.obj",
+			"Slua_GameInstance.gen.cpp.obj",
+			"Slua_LevelScriptActor.gen.cpp.obj",
+			"slua_primary.init.gen.cpp.obj"
+		]
+	}
+}

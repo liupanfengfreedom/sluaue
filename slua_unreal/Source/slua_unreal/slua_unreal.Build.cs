@@ -24,8 +24,8 @@ public class slua_unreal : ModuleRules
         bEnforceIWYU = false;
         bEnableUndefinedIdentifierWarnings = false;
 
-        //var externalSource = Path.Combine(ModuleDirectory, "../../External");
-        var externalSource = Path.Combine(ModuleDirectory, "Public");
+        var externalSource = Path.Combine(ModuleDirectory, "../../External");
+       // var externalSource = Path.Combine(ModuleDirectory, "../thirdparty");
         var externalLib = Path.Combine(ModuleDirectory, "../../Library");
 
         PublicIncludePaths.AddRange(
@@ -40,6 +40,14 @@ public class slua_unreal : ModuleRules
         {
             externalLib = Path.Combine(ModuleDirectory, "../Library");
             PublicAdditionalLibraries.Add(Path.Combine(externalLib, "iOS/liblua.a"));
+            externalSource = Path.Combine(ModuleDirectory, "../External");
+            PublicIncludePaths.AddRange(
+                new string[] {
+                            externalSource,
+                            Path.Combine(externalSource, "lua"),
+                    // ... add public include paths required here ...
+                }
+                );
         }
         else if (Target.Platform == UnrealTargetPlatform.Android)
         {
