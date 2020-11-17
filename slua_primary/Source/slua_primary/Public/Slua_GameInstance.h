@@ -6,7 +6,30 @@
 #include "Engine/GameInstance.h"
 #include "slua.h"
 #include "Slua_GameInstance.generated.h"
+//DECLARE_DYNAMIC_DELEGATE_OneParam(FOnTimeerdelegate, const FString&, str);
+UCLASS(BlueprintType, meta = (DisplayThumbnail = "true"))
+class SLUA_PRIMARY_API UTimerobject :public UObject
+{
+	GENERATED_BODY()
+	static TArray<UTimerobject*> timerpool;
+	static UGameInstance* mworld;
+	FTimerHandle timercontrol;
+	//FOnTimeerdelegate worker;
+	TFunction<void(const FString&)> worker;
 
+	FString mpara;
+	bool b_busy;
+
+public:
+	UTimerobject() {}
+	static void setworld(UGameInstance* pworld) { mworld = pworld; }
+	void timerworker();
+	UTimerobject* settimer(TFunction<void(const FString&)> delegatetimer, const FString& para, float inrate, bool loop, float firstdelay);
+	static UTimerobject* getatimer();
+public:
+	UFUNCTION(BlueprintCallable, Category = "UTimerobject")
+		void stoptimer();
+};
 /**
  * 
  */
@@ -44,6 +67,8 @@ public:
 	DECLARE_DYNAMIC_DELEGATE_OneParam(FOnTimeupdelegate,const FString&,str);
 	UFUNCTION()
 		void dosthdelay(float delay, FOnTimeupdelegate ontimeupdelegate,const FString & para);
+	UFUNCTION(BlueprintCallable, Category = "USlua_GameInstance")
+		UTimerobject* dosthrepeatly(FOnTimeupdelegate delegatetimer, const FString& para, float inrate, bool loop, float firstdelay);
 	UFUNCTION(BlueprintCallable)
 		void logtoscreen(const FString& message);
 	UFUNCTION(BlueprintCallable)

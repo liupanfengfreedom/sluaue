@@ -21,6 +21,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Lua library")
         static void ImagesetTexturefromrawimageundercontent(class UImage* imagep, FString path);
     UFUNCTION(BlueprintCallable, Category = "Lua library")
+        static FVector2D GetUmgGeometrysize(class UWidget* widget);
+    UFUNCTION(BlueprintCallable, Category = "Lua library")
         static float FVectordistance(FVector& v1, FVector& v2);
     //template<typename T>
     //static void Arraytojsonstring<T>(TArray<T> arrayt, FString& strout)

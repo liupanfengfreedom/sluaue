@@ -5,7 +5,8 @@
 #include "Components/Image.h"
 #include "Engine.h"
 #include "MyBlueprintFunctionLibrary.h"
-
+#include "Components/Widget.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 void USlua_BlueprintFunctionLibrary::ImagesetTexture(class UImage* imagep, class UTexture* inp)
 {
 	imagep->SetBrushFromTexture((UTexture2D*)inp);
@@ -20,6 +21,11 @@ void USlua_BlueprintFunctionLibrary::ImagesetTexturefromrawimageundercontent(cla
 	UTexture2D* texturep;
 	UMyBlueprintFunctionLibrary::RawImageToTexture2D(tempcontent, texturep);
 	imagep->SetBrushFromTexture(texturep, true);
+}
+FVector2D USlua_BlueprintFunctionLibrary::GetUmgGeometrysize(class UWidget* widget)
+{
+	float scale = UWidgetLayoutLibrary::GetViewportScale(widget);
+	return	widget->GetCachedGeometry().GetAbsoluteSize()/ scale;
 }
 bool USlua_BlueprintFunctionLibrary::isfileexist_undercontentfolder(FString filename, FString md5)
 {

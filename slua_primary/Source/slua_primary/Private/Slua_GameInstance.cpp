@@ -8,10 +8,48 @@
 #include "HAL/FileManager.h"
 #include "Blueprint/UserWidget.h"
 #include "Engine.h"
+#include "TimerManager.h"
 #include "LoadFileFromLocalOrCloud.h"
 #include "HttpServiceRaw.h"
 #include "MyBlueprintFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+UGameInstance* UTimerobject::mworld;
+TArray<UTimerobject*>  UTimerobject::timerpool;
+UTimerobject* UTimerobject::settimer(TFunction<void(const FString&)> delegatetimer, const FString& para, float inrate, bool loop, float firstdelay)
+{
+	b_busy = true;
+	worker = delegatetimer;
+	mpara = para;
+	if (mworld)
+	{
+		mworld->GetWorld()->GetTimerManager().SetTimer(timercontrol, this, &UTimerobject::timerworker, inrate, loop, firstdelay);
+	}
+	return this;
+}
+void UTimerobject::timerworker()
+{
+	worker(mpara);
+}
+UTimerobject* UTimerobject::getatimer()
+{
+	for (auto var : timerpool)
+	{
+		if (!var->b_busy)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("recycle UTimerobject"));
+			return var;
+		}
+	}
+	UTimerobject* Temp = NewObject<UTimerobject>(mworld);
+	Temp->AddToRoot();
+	timerpool.Add(Temp);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("create a new one UTimerobject"));
+	return Temp;
+}
+void  UTimerobject::stoptimer() {
+	b_busy = false;
+	mworld->GetTimerManager().PauseTimer(timercontrol);
+}
 // read file content
 static uint8* ReadFile(IPlatformFile& PlatformFile, FString path, uint32& len) {
 	IFileHandle* FileHandle = PlatformFile.OpenRead(*path);
@@ -36,6 +74,7 @@ USlua_GameInstance::USlua_GameInstance() :state("main", this) {
 
 void USlua_GameInstance::Init()
 {
+	UTimerobject::setworld(this);
 	state.onInitEvent.AddUObject(this, &USlua_GameInstance::LuaStateInitCallback);
 	state.init();
 
@@ -156,6 +195,10 @@ void USlua_GameInstance::dosthdelay(float delay, FOnTimeupdelegate ontimeupdeleg
 					}
 				);
 		}, nullptr);
+}
+UTimerobject* USlua_GameInstance::dosthrepeatly(FOnTimeupdelegate delegatetimer, const FString& para, float inrate, bool loop, float firstdelay)
+{
+	return UTimerobject::getatimer()->settimer([=](const FString& str) {delegatetimer.ExecuteIfBound(str); }, para, inrate, loop, firstdelay);
 }
 void USlua_GameInstance::logtoscreen(const FString& message)
 {
